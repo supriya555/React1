@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
+
 const pizzaData = [
   {
     name: "Focaccia",
@@ -51,7 +52,6 @@ function App() {
     <div className="container">
       <Header />
       <Menu />
-
       <Footer />
     </div>
   );
@@ -66,10 +66,29 @@ function Header() {
 }
 
 function Menu() {
+  const pizzas = pizzaData;
+  //const pizzas=[];
+  const numpizza = pizzas.length;
   return (
     <main className="menu">
       <h2>Our Menu</h2>
-      <Pizza
+      {numpizza > 0 ? (
+        <>
+          <p>
+            Authentic Italian cuisines are available. Let's have a look at our
+            speciality.
+          </p>
+          <ul className="pizzas">
+            {pizzaData.map((pizza) => (
+              <Pizza pizzaobj={pizza} />
+            ))}
+          </ul>
+        </>
+      ) : (
+        <p>We'r working on menu.</p>
+      )}
+
+      {/*<Pizza
         name="Pizza Prosciutto"
         indgredients="Tomato, mozarella, ham, aragula, and burrata cheese"
         photoname="pizzas/prosciutto.jpg"
@@ -80,22 +99,27 @@ function Menu() {
         indgredients="Tomato, mozarella, and pepperoni"
         photoname="pizzas/salamino.jpg"
         price={12}
-      />
+      />*/}
     </main>
   );
 }
 
-function Pizza(props) {
-  console.log(props);
+function Pizza({ pizzaobj }) {
+  /*instead of passing 'props', passing the the name of the prop(pizzaobj) directly */
+  console.log(pizzaobj);
+  if (pizzaobj.soldOut) return null;
+
   return (
-    <div className="pizza">
-      <img src={props.photoname} />
+    <li className={`pizza ${pizzaobj.soldOut ? "sold-out" : ""}`}>
+      <img src={pizzaobj.photoName} />
       <div>
-        <h3>{props.name}</h3>
-        <p>{props.ingredients}</p>
-        <span>{props.price + 3}</span>
+        <h3>{pizzaobj.name}</h3>
+        <p>{pizzaobj.ingredients}</p>
+
+        <span>{pizzaobj.soldOut ? "SOLD OUT" : pizzaobj.price}</span>
+        {/*alternate option- {pizzaobj.soldOut ? <span>"SOLD OUT"</span> : <span>pizzaobj.price</span>}*/}
       </div>
-    </div>
+    </li>
   );
 }
 
@@ -109,8 +133,23 @@ function Footer() {
   //else alert("Sorry! We're close");
   return (
     <footer className="footer">
-      {new Date().toLocaleTimeString()} We are currently open.
+      {isopen ? (
+        <Order close={close} />
+      ) : (
+        <p>
+          We're happy to serve you between {open}:00 and {close}:00.
+        </p>
+      )}
     </footer>
+  );
+}
+
+function Order(props) {
+  return (
+    <div className="order">
+      <p>We're open until {props.close}:00. Come! visit us or order online.</p>
+      <button className="btn">Order</button>
+    </div>
   );
 }
 
